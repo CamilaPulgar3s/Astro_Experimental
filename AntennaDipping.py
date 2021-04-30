@@ -12,7 +12,7 @@ df_AntDip = pd.read_excel(r"C:\Users\Camila\Desktop\Astronomía Experimental\Tar
 # los valores de 1/sen(E_l) y ln(dW) respectivamente
 
 ln_dP = df_AntDip.iloc[:-1,7]
-sec = df_AntDip.iloc[:-1,3] 
+sec = -(df_AntDip.iloc[:-1,3]).to_numpy() 
 
 # Queremos hacer un ajuste lineal a los datos
 # Para eos definimos una función que reciba x, m y n, 
@@ -34,7 +34,6 @@ plt.plot(x_lineal, y_lineal, 'k', color = 'red', label = 'Ajuste Lineal')
 plt.plot(sec, ln_dP, marker ='o', ls = '', label = 'Datos Experimentales')
 plt.title(r'Fiteo $\tau_w$')
 plt.xlabel(r'$\frac{1}{sen(E_l)}$')
-plt.ylabel(r'ln($\Delta$ W)')
 plt.legend()
 plt.show()
 print(z)
