@@ -23,4 +23,7 @@ W_C = dBm_to_watt(P_C)
 Y = W_H/W_C
 
 T_rec = T_rec(Y, T_H, T_C)
-print(T_rec)
+print('La temperatura de ruido obtenida experimentalmente es',T_rec)
+print('El valor de la potencia W_hot en Watts es', W_H) 
+print('El valor de la potencia W_cold en Watts es', W_C) 
+print('Por lo tanto, el valor del factor Y es', Y)
