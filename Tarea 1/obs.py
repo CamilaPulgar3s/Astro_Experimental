@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import glob
 from scipy.optimize import curve_fit
 from scipy.integrate import trapz
+from astropy.stats import sigma_clip
 
 
 path = r"C:\Users\Camila\Desktop\Astronomía Experimental\Tarea1AstroExperimental\sec_mierc_sem1_2021"
@@ -102,11 +103,6 @@ T_int5 = (T_integrada[4] + T_integrada[9] + T_integrada[14])/3 #abajo
 T_inth = np.array([T_int2, T_int3, T_int4])
 T_intv = np.array([T_int1, T_int3, T_int5])
 
-
-coordlii = np.array([lii[1], lii[2], lii[3]])
-coordbii = np.array([bii[0], bii[2], bii[4]])
-# 208.9,-19.2   208.8,-19.3   208.9,-19.3  209.1,-19.3 208.9, -19.5
-
 # el centro de la nebulosa tiene mayor temperatura
 fg3 = [T_int3, 208.9, 1] 
 fg4 = [T_int3, -19.3, 1]
@@ -115,8 +111,6 @@ coefs4,cov4 = curve_fit(f_gauss,coordbii,T_inth, p0=fg4) # Se fitea T
 t03,M3,S3 = coefs3[0],coefs3[1],coefs3[2]
 t04,M4,S4 = coefs4[0],coefs4[1],coefs4[2]  
 
-clii = np.linspace(208.25, 209.5, 1000)
-cbii = np.linspace(-20, -19, 1000)
 
 plt.clf()
 plt.plot(coordlii,T_intv, label='Data', color = 'blue', marker = 'o', fillstyle = 'none', ls = '')
@@ -125,8 +119,7 @@ plt.title(r'$T_{integrada}$ v/s l$^{II}$, b$^{II}$ = -19°', fontsize=15)
 plt.ylabel(r'Temperatura integrada [$\frac{km}{s}$]', fontsize=12)
 plt.xlabel(r'Longitud [°]', fontsize=12)
 plt.legend()
-plt.show()
-plt.savefig('tintlii.pdf')
+# plt.savefig('tintlii.pdf')
 
 plt.clf()
 plt.plot(coordbii,T_intv, label='Data', color = 'blue', marker = 'o', fillstyle = 'none', ls = '')
@@ -135,5 +128,12 @@ plt.title(r'$T_{integrada}$ v/s b$^{II}$, l$^{II}$ = 208°', fontsize=15)
 plt.ylabel(r'Temperatura integrada [$\frac{km}{s}$]', fontsize=12)
 plt.xlabel(r'Latitud [°]', fontsize=12)
 plt.legend()
-plt.show()
-plt.savefig('tintbii.pdf')
+# plt.savefig('tintbii.png')
+
+# Error
+T = np.array(Temperaturas)
+
+rms = np.sqrt(T.mean(axis=1)**2)
+mean = (T[0:5]+T[5:10]+T[10:15])/3
+rmsmean = np.sqrt(mean.mean(axis=1)**2)
+print(np.repeat(rmsmean,3) / rms)
