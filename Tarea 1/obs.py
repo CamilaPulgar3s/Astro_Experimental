@@ -96,13 +96,13 @@ plt.legend()
 
 # gráfico tmax vs bii
 plt.clf()
-plt.plot(coordbii,T_maxv, label='Data', color = 'blue', marker = 'o', fillstyle = 'none', ls = '')
+plt.plot(coordbii,T_maxh, label='Data', color = 'blue', marker = 'o', fillstyle = 'none', ls = '')
 plt.plot(cbii,f_gauss(cbii,t02, M2,S2), label='Fiteo', color = 'red')
 plt.title(r'$T_{max}$ v/s b$^{II}$, l$^{II}$ = 208°', fontsize=15)
 plt.ylabel('Temperatura máxima [K]', fontsize=12)
 plt.xlabel(r'Latitud [°]', fontsize=12)
 plt.legend()
-# plt.savefig('bii.pdf')
+plt.savefig('bii.png')
 
 
 # integral 
@@ -136,21 +136,22 @@ plt.legend()
 
 # gráfico T integrada vs bii
 plt.clf()
-plt.plot(coordbii,T_intv, label='Data', color = 'blue', marker = 'o', fillstyle = 'none', ls = '')
+plt.plot(coordbii,T_inth, label='Data', color = 'blue', marker = 'o', fillstyle = 'none', ls = '')
 plt.plot(cbii,f_gauss(cbii,t04, M4,S4), label='Fiteo', color = 'red')
 plt.title(r'$T_{integrada}$ v/s b$^{II}$, l$^{II}$ = 208°', fontsize=15)
 plt.ylabel(r'Temperatura integrada [$\frac{km}{s}$]', fontsize=12)
 plt.xlabel(r'Latitud [°]', fontsize=12)
 plt.legend()
-# plt.savefig('tintbii.png')
+plt.savefig('tintbii.png')
 
 # Error
 # creamos un arreglo de temperaturas 
-T = np.array(Temperaturas)
+T1 = np.array(Temperaturas)
+T = sigma_clip(T1, axis=1, maxiters=None)
 # calculamos el error en las 15 mediciones
-rms = np.sqrt(T.mean(axis=1)**2)
+rms = np.sqrt((T**2).mean(axis=1))
 # calculamos el error promedio en cada uno de los 5 cuadrantes
-mean = (T[0:5]+T[5:10]+T[10:15])/3
-rmsmean = np.sqrt(mean.mean(axis=1)**2)
+mean = sigma_clip((T1[0:5]+T1[5:10]+T1[10:15])/3, axis=1, maxiters=None)
+rmsmean = np.sqrt((mean**2).mean(axis=1))
 # printeamos la razón existente que debe ser aprox 1/sqrt(3)
 print(np.repeat(rmsmean,3) / rms)
