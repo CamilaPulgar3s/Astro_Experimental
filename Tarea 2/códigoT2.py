@@ -147,7 +147,7 @@ mpuntual3,covmpuntual3 = curve_fit(esfera_uniforme_masapuntual, R, vR)
 mpuntual4,covmpuntual4 = curve_fit(disco_uniforme, R, vR)
 mpuntual5,covmpuntual5 = curve_fit(disco_uniforme_masapuntual, R, vR)
 
-fig = plt.figure(figsize= (5, 25))
+fig = plt.figure(figsize= (5, 10))
 ax1 = fig.add_subplot(5,1,1)
 ax2 = fig.add_subplot(5,1,2, sharex = ax1)
 ax3 = fig.add_subplot(5,1,3, sharex = ax1)
