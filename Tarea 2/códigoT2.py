@@ -64,12 +64,13 @@ def fmin(l,latitud,vs):
                 vs[q]=velocidad[w]    #guardamos la primera v donde T mayor a 5rms
                 break
 
-vmin=np.zeros(385)
-bvmin=np.zeros(385)
+vmin = np.zeros(385)
+bvmin = np.zeros(385)
 R = np.zeros(385)
 Z = np.zeros(385)
-R0=8.5 #kPc
-vsol=220
+R0 = 8.5 #kPc
+vsol = 220
+omegasol = vsol/R0
 
 #maximorum
 # Se recorren las longitudes y se busca la velocidad más negativa (mayor en modulo), se guarda esta
@@ -99,16 +100,29 @@ vR = np.zeros(385)
 for i in range(385):
     vR[i] = vmin[i]*(np.abs(np.sin(longitud[i]*np.pi/180.))/np.sin(longitud[i]*np.pi/180.)) + np.abs(vsol*np.sin(longitud[i]*np.pi/180.))
 
+omegaR = np.zeros(385)
+for i in range(385):
+    omegaR[i] = vR[i]/R[i] + omegasol
 '''
 CURVA DE ROTACIÓN
 '''
 plt.plot(R,vR, 'lightcoral')
 plt.plot(R,vR, 'k.')
 plt.grid
-plt.title("Velocidad de rotación en función de R")
+plt.title("Curva de Rotación")
 plt.xlabel("R [kpc]")
 plt.ylabel(r"V$_{tan}$ [km/s]")
-plt.savefig('curva.png')
+# plt.savefig('curva.png')
+plt.show()
+
+plt.plot(R, omegaR, 'lightcoral')
+plt.plot(R, omegaR, 'k.')
+plt.grid
+plt.title("Curva de Rotación")
+plt.xlabel("R [kpc]")
+plt.ylabel(r"$\omega_{tan}$ [rad/s]")
+# plt.savefig('curva2.png')
+plt.show()
 
 
 
@@ -138,14 +152,14 @@ def disco_uniforme_masapuntual(R, s, M0):
     v = np.sqrt(G*M/R)
     return v
 
-G=4.302e-6
+G = 4.302e-6   # kpc/Msun*(km**2/s**2)
 
 
-mpuntual1,covmpuntual1 = curve_fit(masa_puntual, R, vR)
-mpuntual2,covmpuntual2 = curve_fit(esfera_uniforme, R, vR)
-mpuntual3,covmpuntual3 = curve_fit(esfera_uniforme_masapuntual, R, vR)
-mpuntual4,covmpuntual4 = curve_fit(disco_uniforme, R, vR)
-mpuntual5,covmpuntual5 = curve_fit(disco_uniforme_masapuntual, R, vR)
+m1,covm1 = curve_fit(masa_puntual, R, vR)
+m2,covm2 = curve_fit(esfera_uniforme, R, vR)
+m3,covm3 = curve_fit(esfera_uniforme_masapuntual, R, vR)
+m4,covm4 = curve_fit(disco_uniforme, R, vR)
+m5,covm5 = curve_fit(disco_uniforme_masapuntual, R, vR)
 
 fig = plt.figure(figsize= (5, 10))
 ax1 = fig.add_subplot(5,1,1)
@@ -157,23 +171,23 @@ ax5 = fig.add_subplot(5,1,5, sharex = ax1)
 
 ax1.plot(R,vR,'lightcoral',label='datos')
 # ax1.plot(R,vR,'r-',label='datos')
-ax1.plot(R,masa_puntual(R,mpuntual1[0]),'k',label='masa puntual')
+ax1.plot(R,masa_puntual(R,m1[0]),'k',label='masa puntual')
 
 ax2.plot(R,vR,'lightcoral',label='datos')
 # ax2.plot(R,vR,'r-',label='datos')
-ax2.plot(R,esfera_uniforme(R,mpuntual2[0]),'k',label='esfera uniforme')
+ax2.plot(R,esfera_uniforme(R,m2[0]),'k',label='esfera uniforme')
 
 ax3.plot(R,vR,'lightcoral',label='datos')
 # ax3.plot(R,vR,'r-',label='datos')
-ax3.plot(R,esfera_uniforme_masapuntual(R,mpuntual3[0], mpuntual3[1]),'k',label='esfera uniforme mp')
+ax3.plot(R,esfera_uniforme_masapuntual(R,m3[0], m3[1]),'k',label='esfera uniforme mp')
 
 ax4.plot(R,vR,'lightcoral',label='datos')
 # ax4.plot(R,vR,'r-',label='datos')
-ax4.plot(R,disco_uniforme(R,mpuntual4[0]),'k',label='disco uniforme')
+ax4.plot(R,disco_uniforme(R,m4[0]),'k',label='disco uniforme')
 
 ax5.plot(R,vR,'lightcoral',label='datos')
 # ax5.plot(R,vR,'r-',label='datos')
-ax5.plot(R,disco_uniforme_masapuntual(R,mpuntual5[0], mpuntual5[1]),'k',label='disco uniforme mp')
+ax5.plot(R,disco_uniforme_masapuntual(R,m5[0], m5[1]),'k',label='disco uniforme mp')
 
 ax1.set_title('Ajuste de Masas')
 ax5.set_xlabel('R [kpc]')
@@ -189,7 +203,7 @@ ax3.legend()
 ax4.legend()
 ax5.legend()
 plt.subplots_adjust(wspace=0, hspace=0)
-plt.savefig('ajuste.png')
+# plt.savefig('ajuste.png')
 plt.show()
 
 '''
@@ -202,5 +216,5 @@ plt.title("Corrugación del plano en función de R")
 plt.xlabel("R [kpc]", fontsize='12')
 plt.ylabel("Z [kpc]", fontsize='12')
 plt.tick_params(labelsize='12')
-plt.savefig('corrugacion.png')
+# plt.savefig('corrugacion.png')
 plt.show()
