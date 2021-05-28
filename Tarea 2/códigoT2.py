@@ -40,12 +40,12 @@ for i_b in range(len(latitud)):
 
 for lat in latitud:
     table_b_fix = tabla.loc[tabla['latitud b'] == lat]
-    min_vel= table_b_fix['v_tan'].min()
+    min_vel = table_b_fix['v_tan'].min()
     # print(lat, min_vel)
 
 for lon in longitud:
     table_b_fix = tabla.loc[tabla['longitud l'] == lon]
-    min_vel= table_b_fix['v_tan'].min()
+    min_vel = table_b_fix['v_tan'].min()
     # print(lon, min_vel)
 
 # Se crea una funcion que para una longitud(l) fija, se recorre latitud(b) y se calcula el rms de las
@@ -68,9 +68,10 @@ vmin = np.zeros(385)
 bvmin = np.zeros(385)
 R = np.zeros(385)
 Z = np.zeros(385)
+R0km = 2.623e+17 # distancia en km
 R0 = 8.5 #kPc
 vsol = 220
-omegasol = vsol/R0
+omegasol = vsol/R0km
 
 #maximorum
 # Se recorren las longitudes y se busca la velocidad más negativa (mayor en modulo), se guarda esta
@@ -90,6 +91,7 @@ for i in range(385):
     bvmin[i]=b1
     R[i]=np.abs(R0*np.sin(longitud[i]*np.pi/180.)) #R0 sin(l)  
     Z[i]= b1*np.pi/180*R0*np.cos(longitud[i]*np.pi/180.)
+    
 
     
 # Se obtiene la Vtan con Vtan = −Vmin − Vsol · sin(lπ/180 ), donde Vmin es la velocidad mayor en
@@ -98,11 +100,16 @@ for i in range(385):
 
 vR = np.zeros(385)
 for i in range(385):
-    vR[i] = vmin[i]*(np.abs(np.sin(longitud[i]*np.pi/180.))/np.sin(longitud[i]*np.pi/180.)) + np.abs(vsol*np.sin(longitud[i]*np.pi/180.))
+    vR[i] = vmin[i]*(np.abs(np.sin(longitud[i]*np.pi/180.))/ \
+            np.sin(longitud[i]*np.pi/180.)) + \
+            np.abs(vsol*np.sin(longitud[i]*np.pi/180.))
 
 omegaR = np.zeros(385)
 for i in range(385):
-    omegaR[i] = vR[i]/R[i] + omegasol
+    # 1 kpc = 3.08567758128E+16 km
+    # 1 km = 3.2408e-17 kpc
+    # 220 km/s = 220
+    omegaR[i] = (vR[i]*3.2408e-17)/R[i] + omegasol
 '''
 CURVA DE ROTACIÓN
 '''
@@ -121,7 +128,7 @@ plt.grid
 plt.title("Curva de Rotación")
 plt.xlabel("R [kpc]")
 plt.ylabel(r"$\omega_{tan}$ [rad/s]")
-# plt.savefig('curva2.png')
+plt.savefig('curva2.png')
 plt.show()
 
 
@@ -160,6 +167,12 @@ m2,covm2 = curve_fit(esfera_uniforme, R, vR)
 m3,covm3 = curve_fit(esfera_uniforme_masapuntual, R, vR)
 m4,covm4 = curve_fit(disco_uniforme, R, vR)
 m5,covm5 = curve_fit(disco_uniforme_masapuntual, R, vR)
+
+print('M0 masa puntual:', m1[0])
+print('rho esfera uniforme:', m2[0])
+print('rho, M0 esfera unirme con masa puntual:', m3)
+print('s disco uniforme:', m4[0])
+print('s, M0 disco uniforme masa puntual:', m5)
 
 fig = plt.figure(figsize= (5, 10))
 ax1 = fig.add_subplot(5,1,1)
@@ -218,3 +231,5 @@ plt.ylabel("Z [kpc]", fontsize='12')
 plt.tick_params(labelsize='12')
 # plt.savefig('corrugacion.png')
 plt.show()
+
+# %%
