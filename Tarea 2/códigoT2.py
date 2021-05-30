@@ -84,7 +84,7 @@ for i in range(385):
     # 1 kpc = 3.08567758128E+16 km
     # 1 km = 3.2408e-17 kpc
     # 220 km/s = 220
-    omegaR[i] = (vmin[i]*3.2408e-17)/R[i] + omegasol
+    omegaR[i] = (vR[i]*3.2408e-17)/R[i] + omegasol
 '''
 CURVA DE ROTACIÓN
 '''
@@ -94,7 +94,7 @@ plt.grid
 plt.title("Curva de Rotación")
 plt.xlabel("R [kpc]")
 plt.ylabel(r"V$_{tan}$ [km/s]")
-plt.savefig('curva.png')
+#plt.savefig('curva.png')
 plt.show()
 
 plt.plot(R, omegaR, 'lightcoral')
@@ -103,7 +103,7 @@ plt.grid
 plt.title("Curva de Rotación")
 plt.xlabel("R [kpc]")
 plt.ylabel(r"$\omega_{tan}$ [rad/s]")
-plt.savefig('curva2.png')
+# plt.savefig('curva2.png')
 plt.show()
 
 
@@ -191,7 +191,7 @@ ax3.legend()
 ax4.legend()
 ax5.legend()
 plt.subplots_adjust(wspace=0, hspace=0)
-plt.savefig('ajuste.png')
+#plt.savefig('ajuste.png')
 plt.show()
 
 '''
@@ -204,6 +204,6 @@ plt.title("Corrugación del plano en función de R")
 plt.xlabel("R [kpc]", fontsize='12')
 plt.ylabel("Z [kpc]", fontsize='12')
 plt.tick_params(labelsize='12')
-plt.savefig('corrugacion.png')
+#plt.savefig('corrugacion.png')
 plt.show()
 
