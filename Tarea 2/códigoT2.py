@@ -22,32 +22,6 @@ velocidad=values(header,1)
 longitud=values(header,2)
 latitud=values(header,3)
 
-columns = ['longitud l', 'latitud b', 'v_tan']
-tabla = pd.DataFrame(columns=columns)
-
-for i_b in range(len(latitud)):
-    for i_l in range(len(longitud)):
-        T = data[i_b][i_l][:]
-        r = sigma_clip(T, sigma_lower=3, sigma_upper=3)
-        rms = np.sqrt(np.mean(r**2))
-        rmask = r.mask
-        if len(velocidad[rmask])==0:
-            v_tan = np.nan
-        else:
-            v_tan = velocidad[rmask][0]
-        
-        tabla = tabla.append({'longitud l':longitud[i_l], 'latitud b':latitud[i_b], 'v_tan':v_tan}, ignore_index=True) 
-
-for lat in latitud:
-    table_b_fix = tabla.loc[tabla['latitud b'] == lat]
-    min_vel = table_b_fix['v_tan'].min()
-    # print(lat, min_vel)
-
-for lon in longitud:
-    table_b_fix = tabla.loc[tabla['longitud l'] == lon]
-    min_vel = table_b_fix['v_tan'].min()
-    # print(lon, min_vel)
-
 # Se crea una funcion que para una longitud(l) fija, se recorre latitud(b) y se calcula el rms de las
 # velocidades
 # Esta misma funcion recorre el cubo de las velocidades asociadas a l y b, hasta que se llega a una
@@ -56,8 +30,9 @@ for lon in longitud:
 def fmin(l,latitud,vs):
     #recorre latitud
     for q in range(33):
-        T1=data[q][l][:]
-        rms=np.sqrt(np.mean(T1**2))   #calcula rms
+        T = data[q][l][:]
+        r = sigma_clip(T, sigma=5)
+        rms = np.sqrt(np.mean(r**2))
         #recorre velocidad
         for w in range(306):
             if data[q][l][w]>=5*rms:  #buscamos que no sea ruido
@@ -89,7 +64,7 @@ for i in range(385):
             b1=latitud[j+1]
     vmin[i]=v1
     bvmin[i]=b1
-    R[i]=np.abs(R0*np.sin(longitud[i]*np.pi/180.)) #R0 sin(l)  
+    R[i]=np.abs(R0*np.sin(longitud[i]*np.pi/180.)) #R0 sin(l)
     Z[i]= b1*np.pi/180*R0*np.cos(longitud[i]*np.pi/180.)
     
 
@@ -109,7 +84,7 @@ for i in range(385):
     # 1 kpc = 3.08567758128E+16 km
     # 1 km = 3.2408e-17 kpc
     # 220 km/s = 220
-    omegaR[i] = (vR[i]*3.2408e-17)/R[i] + omegasol
+    omegaR[i] = (vmin[i]*3.2408e-17)/R[i] + omegasol
 '''
 CURVA DE ROTACIÓN
 '''
@@ -119,7 +94,7 @@ plt.grid
 plt.title("Curva de Rotación")
 plt.xlabel("R [kpc]")
 plt.ylabel(r"V$_{tan}$ [km/s]")
-# plt.savefig('curva.png')
+plt.savefig('curva.png')
 plt.show()
 
 plt.plot(R, omegaR, 'lightcoral')
@@ -162,7 +137,7 @@ def disco_uniforme_masapuntual(R, s, M0):
 G = 4.302e-6   # kpc/Msun*(km**2/s**2)
 
 
-m1,covm1 = curve_fit(masa_puntual, R, vR)
+m1,covm1 = curve_fit(masa_puntual, R, vR, bounds=(0,[np.inf]))
 m2,covm2 = curve_fit(esfera_uniforme, R, vR)
 m3,covm3 = curve_fit(esfera_uniforme_masapuntual, R, vR)
 m4,covm4 = curve_fit(disco_uniforme, R, vR)
@@ -216,7 +191,7 @@ ax3.legend()
 ax4.legend()
 ax5.legend()
 plt.subplots_adjust(wspace=0, hspace=0)
-# plt.savefig('ajuste.png')
+plt.savefig('ajuste.png')
 plt.show()
 
 '''
@@ -229,7 +204,6 @@ plt.title("Corrugación del plano en función de R")
 plt.xlabel("R [kpc]", fontsize='12')
 plt.ylabel("Z [kpc]", fontsize='12')
 plt.tick_params(labelsize='12')
-# plt.savefig('corrugacion.png')
+plt.savefig('corrugacion.png')
 plt.show()
 
-# %%
